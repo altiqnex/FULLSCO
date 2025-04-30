@@ -437,11 +437,16 @@ export default function SiteSettingsPage() {
 
   // معالجة حدث إرسال النموذج مع تحسين الأداء
   const onSubmit = (data: SiteSettingsFormValues) => {
-    // استخدام جميع البيانات مباشرة بدلاً من تقسيمها حسب التبويب
-    // هذا سيضمن أن جميع الأقسام تعمل بشكل صحيح عند حفظها
-    console.log('Submitting complete site settings data', data);
+    // مزامنة حقول الفوتر لضمان ظهور التغييرات في الواجهة الأمامية
+    if (data.footerText) {
+      data.footerCopyrightText = data.footerText;
+    } else if (data.footerCopyrightText) {
+      data.footerText = data.footerCopyrightText;
+    }
     
-    // الآن نرسل جميع البيانات للتحديث دون تقسيم
+    console.log('Submitting synchronized site settings data', data);
+    
+    // إرسال جميع البيانات بعد المزامنة
     updateMutation.mutate(data);
   };
 

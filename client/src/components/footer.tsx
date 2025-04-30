@@ -156,7 +156,7 @@ const Footer = () => {
         <div className="border-t border-gray-800 pt-6">
           <div className="flex flex-col md:flex-row md:justify-between items-center">
             <p className="text-sm text-gray-400">
-              {settings?.footerText || `&copy; ${new Date().getFullYear()} ${settings?.siteName || 'FULLSCO'}. جميع الحقوق محفوظة.`}
+              {settings?.footerText || settings?.footerCopyrightText || `&copy; ${new Date().getFullYear()} ${settings?.siteName || 'FULLSCO'}. جميع الحقوق محفوظة.`}
             </p>
             <div className="flex space-x-4 rtl:space-x-reverse mt-4 md:mt-0">
               {/* عرض روابط الصفحات السفلية المخصصة - فقط الصفحات الموجودة بالفعل */}
