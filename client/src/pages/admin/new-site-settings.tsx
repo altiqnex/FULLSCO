@@ -121,8 +121,18 @@ export default function NewSiteSettingsPage() {
       }
     },
     onSuccess: (updatedSettings) => {
+      // تحديث البيانات في ذاكرة التخزين المؤقت
       queryClient.setQueryData(['/api/site-settings'], updatedSettings);
-      toast({ title: 'تم الحفظ بنجاح', description: 'تم تحديث إعدادات الموقع بنجاح' });
+      
+      // إعادة تحميل إعدادات الموقع بالقوة
+      queryClient.invalidateQueries({ queryKey: ['/api/site-settings'] });
+      
+      // إضافة تأخير قصير لإعادة تحميل الصفحة لتطبيق التغييرات بالكامل
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+      
+      toast({ title: 'تم الحفظ بنجاح', description: 'تم تحديث إعدادات الموقع بنجاح. جاري تطبيق التغييرات...' });
     },
     onError: (error) => {
       toast({ title: 'خطأ!', description: `فشل في تحديث إعدادات الموقع: ${error.message}`, variant: 'destructive' });
