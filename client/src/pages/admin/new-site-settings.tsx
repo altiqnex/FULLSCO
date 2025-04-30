@@ -124,24 +124,56 @@ export default function NewSiteSettingsPage() {
       // تحديث البيانات في ذاكرة التخزين المؤقت
       queryClient.setQueryData(['/api/site-settings'], updatedSettings);
       
-      // إعادة جلب البيانات بالقوة
+      // إعادة تحميل البيانات فقط (بدون إعادة تحميل كامل للصفحة) لتحسين الأداء
       queryClient.invalidateQueries({ queryKey: ['/api/site-settings'] });
-      queryClient.refetchQueries({ queryKey: ['/api/site-settings'] });
-      
-      // حذف أي تخزين مؤقت للإعدادات
-      localStorage.removeItem('site-settings-cache');
-      sessionStorage.removeItem('site-settings-cache');
       
       toast({ 
         title: 'تم الحفظ بنجاح', 
-        description: 'تم تحديث إعدادات الموقع بنجاح. جاري تطبيق التغييرات...' 
+        description: 'تم تحديث إعدادات الموقع بنجاح' 
       });
       
-      // إضافة تأخير قصير لإعادة تحميل الصفحة لتطبيق التغييرات بالكامل
-      setTimeout(() => {
-        console.log('Reloading page to apply all site settings changes');
-        window.location.reload();
-      }, 800);
+      // تطبيق التغييرات الأساسية مباشرة (بدون إعادة تحميل)
+      if (updatedSettings.primaryColor) {
+        try {
+          const hexToHSL = (hex: string) => {
+            const hexColor = hex.replace('#', '');
+            const r = parseInt(hexColor.substr(0, 2), 16) / 255;
+            const g = parseInt(hexColor.substr(2, 2), 16) / 255;
+            const b = parseInt(hexColor.substr(4, 2), 16) / 255;
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            let h = 0, s = 0, l = (max + min) / 2;
+            if (max !== min) {
+              const d = max - min;
+              s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+              if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+              else if (max === g) h = (b - r) / d + 2;
+              else h = (r - g) / d + 4;
+              h *= 60;
+            }
+            return {
+              h: Math.round(h),
+              s: Math.round(s * 100),
+              l: Math.round(l * 100)
+            };
+          };
+          
+          const hsl = hexToHSL(updatedSettings.primaryColor);
+          document.documentElement.style.setProperty('--primary', `${hsl.h} ${hsl.s}% ${hsl.l}%`);
+          
+          if (updatedSettings.secondaryColor) {
+            const hsl2 = hexToHSL(updatedSettings.secondaryColor);
+            document.documentElement.style.setProperty('--secondary', `${hsl2.h} ${hsl2.s}% ${hsl2.l}%`);
+          }
+          
+          if (updatedSettings.accentColor) {
+            const hsl3 = hexToHSL(updatedSettings.accentColor);
+            document.documentElement.style.setProperty('--accent', `${hsl3.h} ${hsl3.s}% ${hsl3.l}%`);
+          }
+        } catch (e) {
+          console.error('Error applying color updates:', e);
+        }
+      }
     },
     onError: (error) => {
       toast({ title: 'خطأ!', description: `فشل في تحديث إعدادات الموقع: ${error.message}`, variant: 'destructive' });

@@ -42,15 +42,7 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
     queryKey: ['/api/site-settings'],
     queryFn: async () => {
       try {
-        // منع التخزين المؤقت في المتصفح
-        const timestamp = new Date().getTime();
-        const response = await fetch(`/api/site-settings?_=${timestamp}`, {
-          cache: 'no-store',
-          headers: {
-            'Pragma': 'no-cache',
-            'Cache-Control': 'no-cache, no-store, must-revalidate'
-          }
-        });
+        const response = await fetch('/api/site-settings');
         if (!response.ok) {
           throw new Error('Failed to fetch site settings');
         }
@@ -62,8 +54,8 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
         throw error;
       }
     },
-    staleTime: 0, // تعطيل التخزين المؤقت
-    refetchOnWindowFocus: true, // إعادة تحميل البيانات عند التركيز على النافذة
+    staleTime: 1000 * 60 * 1, // دقيقة واحدة
+    refetchOnWindowFocus: false, // عدم إعادة التحميل عند التركيز لتحسين الأداء
   });
 
   // تطبيق الإعدادات على المستند
