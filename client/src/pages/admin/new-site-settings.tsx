@@ -245,6 +245,7 @@ export default function NewSiteSettingsPage() {
 
   // معالجة حدث إرسال النموذج
   const onSubmit = (data: SiteSettingsFormValues) => {
+    console.log('Submitting complete site settings data', data);
     updateMutation.mutate(data);
   };
 

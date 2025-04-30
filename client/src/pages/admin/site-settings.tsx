@@ -437,46 +437,12 @@ export default function SiteSettingsPage() {
 
   // معالجة حدث إرسال النموذج مع تحسين الأداء
   const onSubmit = (data: SiteSettingsFormValues) => {
-    // فصل التحديثات حسب التبويب النشط لتقليل حجم البيانات المرسلة
-    const sectionData = activeTab === 'sections' ? {
-        // أقسام الصفحة الرئيسية
-        showHeroSection: data.showHeroSection,
-        showFeaturedScholarships: data.showFeaturedScholarships,
-        showSearchSection: data.showSearchSection,
-        showCategoriesSection: data.showCategoriesSection,
-        showCountriesSection: data.showCountriesSection,
-        showLatestArticles: data.showLatestArticles,
-        showSuccessStories: data.showSuccessStories,
-        showNewsletterSection: data.showNewsletterSection,
-        showStatisticsSection: data.showStatisticsSection,
-        showPartnersSection: data.showPartnersSection,
-        
-        // عناوين وأوصاف الأقسام
-        heroTitle: data.heroTitle,
-        heroDescription: data.heroDescription,
-        featuredScholarshipsTitle: data.featuredScholarshipsTitle,
-        featuredScholarshipsDescription: data.featuredScholarshipsDescription,
-        categoriesSectionTitle: data.categoriesSectionTitle,
-        categoriesSectionDescription: data.categoriesSectionDescription,
-        countriesSectionTitle: data.countriesSectionTitle,
-        countriesSectionDescription: data.countriesSectionDescription,
-        latestArticlesTitle: data.latestArticlesTitle,
-        latestArticlesDescription: data.latestArticlesDescription,
-        successStoriesTitle: data.successStoriesTitle,
-        successStoriesDescription: data.successStoriesDescription,
-        newsletterSectionTitle: data.newsletterSectionTitle,
-        newsletterSectionDescription: data.newsletterSectionDescription,
-        statisticsSectionTitle: data.statisticsSectionTitle,
-        statisticsSectionDescription: data.statisticsSectionDescription,
-        partnersSectionTitle: data.partnersSectionTitle,
-        partnersSectionDescription: data.partnersSectionDescription,
-      } : {};
-      
-    // إرسال البيانات المحددة فقط بدلاً من الكل في وقت واحد
-    updateMutation.mutate({
-      ...data,
-      ...sectionData
-    });
+    // استخدام جميع البيانات مباشرة بدلاً من تقسيمها حسب التبويب
+    // هذا سيضمن أن جميع الأقسام تعمل بشكل صحيح عند حفظها
+    console.log('Submitting complete site settings data', data);
+    
+    // الآن نرسل جميع البيانات للتحديث دون تقسيم
+    updateMutation.mutate(data);
   };
 
   // في حالة تحميل بيانات المصادقة أو عدم تسجيل الدخول
