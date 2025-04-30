@@ -27,6 +27,12 @@ export interface SiteSettings {
   enableNewsletter: boolean;
   enableScholarshipSearch: boolean;
   footerText?: string;
+  footerCopyrightText?: string;
+  footerStyle?: string;
+  footerBackgroundColor?: string;
+  footerTextColor?: string;
+  footerColumns?: number;
+  customFooterHtml?: string;
 }
 
 interface SiteSettingsContextValue {
