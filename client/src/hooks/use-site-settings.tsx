@@ -38,11 +38,19 @@ interface SiteSettingsContextValue {
 const SiteSettingsContext = createContext<SiteSettingsContextValue | undefined>(undefined);
 
 export function SiteSettingsProvider({ children }: { children: ReactNode }) {
-  const { data: settings, isLoading, error } = useQuery<SiteSettings, Error>({
+  const { data: settings, isLoading, error, refetch } = useQuery<SiteSettings, Error>({
     queryKey: ['/api/site-settings'],
     queryFn: async () => {
       try {
-        const response = await fetch('/api/site-settings');
+        // منع التخزين المؤقت في المتصفح
+        const timestamp = new Date().getTime();
+        const response = await fetch(`/api/site-settings?_=${timestamp}`, {
+          cache: 'no-store',
+          headers: {
+            'Pragma': 'no-cache',
+            'Cache-Control': 'no-cache, no-store, must-revalidate'
+          }
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch site settings');
         }
@@ -54,7 +62,8 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
         throw error;
       }
     },
-    staleTime: 1000 * 60 * 5, // 5 دقائق
+    staleTime: 0, // تعطيل التخزين المؤقت
+    refetchOnWindowFocus: true, // إعادة تحميل البيانات عند التركيز على النافذة
   });
 
   // تطبيق الإعدادات على المستند

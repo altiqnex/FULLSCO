@@ -124,15 +124,24 @@ export default function NewSiteSettingsPage() {
       // تحديث البيانات في ذاكرة التخزين المؤقت
       queryClient.setQueryData(['/api/site-settings'], updatedSettings);
       
-      // إعادة تحميل إعدادات الموقع بالقوة
+      // إعادة جلب البيانات بالقوة
       queryClient.invalidateQueries({ queryKey: ['/api/site-settings'] });
+      queryClient.refetchQueries({ queryKey: ['/api/site-settings'] });
+      
+      // حذف أي تخزين مؤقت للإعدادات
+      localStorage.removeItem('site-settings-cache');
+      sessionStorage.removeItem('site-settings-cache');
+      
+      toast({ 
+        title: 'تم الحفظ بنجاح', 
+        description: 'تم تحديث إعدادات الموقع بنجاح. جاري تطبيق التغييرات...' 
+      });
       
       // إضافة تأخير قصير لإعادة تحميل الصفحة لتطبيق التغييرات بالكامل
       setTimeout(() => {
+        console.log('Reloading page to apply all site settings changes');
         window.location.reload();
-      }, 500);
-      
-      toast({ title: 'تم الحفظ بنجاح', description: 'تم تحديث إعدادات الموقع بنجاح. جاري تطبيق التغييرات...' });
+      }, 800);
     },
     onError: (error) => {
       toast({ title: 'خطأ!', description: `فشل في تحديث إعدادات الموقع: ${error.message}`, variant: 'destructive' });
