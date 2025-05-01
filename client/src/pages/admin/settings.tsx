@@ -16,6 +16,12 @@ export default function AdminSettings() {
     // توجيه المستخدم إلى صفحة إعدادات الموقع (site-settings)
     navigate('/admin/site-settings');
   }, [navigate, toast]);
+  
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-background">
+      <p>جاري توجيهك إلى صفحة الإعدادات...</p>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-background" dir="rtl">

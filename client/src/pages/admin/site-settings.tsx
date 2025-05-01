@@ -222,20 +222,35 @@ export default function SiteSettingsPage() {
   // تحديث إعدادات الموقع
   const updateMutation = useMutation({
     mutationFn: async (updatedSettings: SiteSettingsFormValues) => {
+      // طباعة البيانات قبل إرسالها للتحقق من وجود أي مشاكل
+      console.log('Sending settings data:', JSON.stringify(updatedSettings, null, 2));
+      
       try {
         const response = await fetch('/api/site-settings', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(updatedSettings),
+          credentials: 'include', // إضافة هذا الخيار للتأكد من إرسال ملفات تعريف الارتباط
         });
-        if (!response.ok) throw new Error('فشل في تحديث إعدادات الموقع');
-        return response.json();
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => null);
+          console.error('Server response error:', response.status, errorData || response.statusText);
+          throw new Error(`فشل في تحديث إعدادات الموقع: ${errorData?.message || response.statusText}`);
+        }
+        
+        const result = await response.json();
+        console.log('Server response:', result);
+        return result;
       } catch (error) {
         console.error('Error updating site settings:', error);
         throw error;
       }
     },
     onSuccess: (updatedSettings) => {
+      // طباعة البيانات المحدثة
+      console.log('Applying site settings to document:', updatedSettings);
+      
       // تحديث البيانات في ذاكرة التخزين المؤقت
       queryClient.setQueryData(['/api/site-settings'], updatedSettings);
       
@@ -275,15 +290,18 @@ export default function SiteSettingsPage() {
           
           const hsl = hexToHSL(updatedSettings.primaryColor);
           document.documentElement.style.setProperty('--primary', `${hsl.h} ${hsl.s}% ${hsl.l}%`);
+          console.log(`Applied primary color: ${hsl.h} ${hsl.s}% ${hsl.l}%`);
           
           if (updatedSettings.secondaryColor) {
             const hsl2 = hexToHSL(updatedSettings.secondaryColor);
             document.documentElement.style.setProperty('--secondary', `${hsl2.h} ${hsl2.s}% ${hsl2.l}%`);
+            console.log(`Applied secondary color: ${hsl2.h} ${hsl2.s}% ${hsl2.l}%`);
           }
           
           if (updatedSettings.accentColor) {
             const hsl3 = hexToHSL(updatedSettings.accentColor);
             document.documentElement.style.setProperty('--accent', `${hsl3.h} ${hsl3.s}% ${hsl3.l}%`);
+            console.log(`Applied accent color: ${hsl3.h} ${hsl3.s}% ${hsl3.l}%`);
           }
         } catch (e) {
           console.error('Error applying color updates:', e);
@@ -291,7 +309,12 @@ export default function SiteSettingsPage() {
       }
     },
     onError: (error) => {
-      toast({ title: 'خطأ!', description: `فشل في تحديث إعدادات الموقع: ${error.message}`, variant: 'destructive' });
+      console.error('Mutation error:', error);
+      toast({ 
+        title: 'خطأ!', 
+        description: `فشل في تحديث إعدادات الموقع: ${(error as Error).message}`, 
+        variant: 'destructive' 
+      });
     }
   });
 
@@ -437,18 +460,25 @@ export default function SiteSettingsPage() {
 
   // معالجة حدث إرسال النموذج مع تحسين الأداء
   const onSubmit = (data: SiteSettingsFormValues) => {
-    // مزامنة حقول الفوتر لضمان ظهور التغييرات في الواجهة الأمامية
-    if (data.footerText) {
-      data.footerCopyrightText = data.footerText;
-    } else if (data.footerCopyrightText) {
-      data.footerText = data.footerCopyrightText;
-    }
-    
-    console.log('Submitting synchronized site settings data', data);
-    
     try {
-      // إرسال جميع البيانات بعد المزامنة
-      updateMutation.mutate(data);
+      // تحضير البيانات قبل الإرسال (تجنب الحقول الفارغة)
+      const cleanedData = { ...data };
+      
+      // تعامل خاص مع البيانات البولينية
+      Object.keys(cleanedData).forEach(key => {
+        if (typeof cleanedData[key] === 'boolean') {
+          // لا تغير القيم البولينية
+        } else if (cleanedData[key] === '') {
+          // تعيين القيم الفارغة كقيم null لتتوافق مع القاعدة
+          cleanedData[key] = null;
+        }
+      });
+      
+      // إضافة تسجيل
+      console.log('Submitting site settings with cleaned data:', cleanedData);
+      
+      // إرسال البيانات إلى الخادم
+      updateMutation.mutate(cleanedData);
     } catch (error) {
       console.error('Error when submitting form:', error);
       toast({ 
