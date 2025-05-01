@@ -21,7 +21,7 @@ const Footer = () => {
                 />
               ) : (
                 <span className="text-2xl font-bold">
-                  {settings?.siteName || 'FULL'}<span className="text-accent">SCO</span>
+                  {settings?.siteName || 'FULLSCO'}
                 </span>
               )}
             </Link>

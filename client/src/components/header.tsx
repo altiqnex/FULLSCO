@@ -56,7 +56,7 @@ const Header = () => {
                 />
               ) : (
                 <span className="text-2xl font-bold tracking-tight text-primary md:text-3xl">
-                  {settings?.siteName || 'FULL'}<span className="text-accent">SCO</span>
+                  {settings?.siteName || 'FULLSCO'}
                 </span>
               )}
               {settings?.siteTagline && (
