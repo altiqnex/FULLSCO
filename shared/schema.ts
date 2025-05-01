@@ -8,7 +8,7 @@ export const users = pgTable("users", {
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   email: text("email").notNull().unique(),
-  fullName: text("full_name").notNull(),
+  fullName: text("display_name").notNull(),
   role: text("role").default("user").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull()
 });
@@ -85,19 +85,14 @@ export const posts = pgTable("posts", {
   slug: text("slug").notNull().unique(),
   content: text("content").notNull(),
   excerpt: text("excerpt"),
-  authorId: integer("author_id").references(() => users.id),
-  imageUrl: text("image_url"),
-  isFeatured: boolean("is_featured").default(false),
-  views: integer("views").default(0),
-  metaTitle: text("meta_title"),
-  metaDescription: text("meta_description"),
+  authorId: integer("author_id").references(() => users.id).notNull(),
+  status: text("status").notNull().default("draft"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull()
 });
 
 export const insertPostSchema = createInsertSchema(posts).omit({
   id: true,
-  views: true,
   createdAt: true,
   updatedAt: true
 });
@@ -188,73 +183,20 @@ export const siteSettings = pgTable("site_settings", {
   primaryColor: text("primary_color"),
   secondaryColor: text("secondary_color"),
   accentColor: text("accent_color"),
-  enableDarkMode: boolean("enable_dark_mode").default(true),
-  rtlDirection: boolean("rtl_direction").default(true),
-  defaultLanguage: text("default_language").default("ar"),
-  enableNewsletter: boolean("enable_newsletter").default(true),
-  enableScholarshipSearch: boolean("enable_scholarship_search").default(true),
+  enableDarkMode: boolean("enable_dark_mode"),
+  rtlDirection: boolean("rtl_direction"),
+  defaultLanguage: text("default_language"),
+  enableNewsletter: boolean("enable_newsletter"),
+  enableScholarshipSearch: boolean("enable_scholarship_search"),
   footerText: text("footer_text"),
   
-  // إعدادات عرض الأقسام في الصفحة الرئيسية
-  showHeroSection: boolean("show_hero_section").default(true),
-  showFeaturedScholarships: boolean("show_featured_scholarships").default(true),
-  showSearchSection: boolean("show_search_section").default(true),
-  showCategoriesSection: boolean("show_categories_section").default(true),
-  showCountriesSection: boolean("show_countries_section").default(true),
-  showLatestArticles: boolean("show_latest_articles").default(true),
-  showSuccessStories: boolean("show_success_stories").default(true),
-  showNewsletterSection: boolean("show_newsletter_section").default(true),
-  showStatisticsSection: boolean("show_statistics_section").default(true),
-  showPartnersSection: boolean("show_partners_section").default(true),
-  
-  // خيارات تخصيص العناوين والأوصاف
+  // Hero Section
+  showHeroSection: boolean("show_hero_section"),
   heroTitle: text("hero_title"),
-  heroDescription: text("hero_description"),
-  featuredScholarshipsTitle: text("featured_scholarships_title"),
-  featuredScholarshipsDescription: text("featured_scholarships_description"),
-  categoriesSectionTitle: text("categories_section_title"),
-  categoriesSectionDescription: text("categories_section_description"),
-  countriesSectionTitle: text("countries_section_title"),
-  countriesSectionDescription: text("countries_section_description"),
-  latestArticlesTitle: text("latest_articles_title"),
-  latestArticlesDescription: text("latest_articles_description"),
-  successStoriesTitle: text("success_stories_title"),
-  successStoriesDescription: text("success_stories_description"),
-  newsletterSectionTitle: text("newsletter_section_title"),
-  newsletterSectionDescription: text("newsletter_section_description"),
-  statisticsSectionTitle: text("statistics_section_title"),
-  statisticsSectionDescription: text("statistics_section_description"),
-  partnersSectionTitle: text("partners_section_title"),
-  partnersSectionDescription: text("partners_section_description"),
+  heroSubtitle: text("hero_subtitle"),
   
-  // خيارات تخصيص الهيدر
-  headerStyle: text("header_style").default("default"), // نمط الهيدر (default, transparent, compact, etc)
-  headerBackgroundColor: text("header_background_color"), // لون خلفية الهيدر
-  headerTextColor: text("header_text_color"), // لون نص الهيدر
-  headerLogoPosition: text("header_logo_position").default("left"), // موضع الشعار (left, center, right)
-  headerHeight: text("header_height"), // ارتفاع الهيدر
-  customHeaderHtml: text("custom_header_html"), // HTML مخصص للهيدر
-  showHeaderSearch: boolean("show_header_search").default(true), // إظهار حقل البحث في الهيدر
-  showHeaderLanguageSwitcher: boolean("show_header_language_switcher").default(true), // إظهار مبدل اللغة في الهيدر
-  showHeaderLoginButton: boolean("show_header_login_button").default(true), // إظهار زر تسجيل الدخول في الهيدر
-  
-  // خيارات تخصيص الفوتر
-  footerStyle: text("footer_style").default("default"), // نمط الفوتر (default, simple, multi-column, etc)
-  footerBackgroundColor: text("footer_background_color"), // لون خلفية الفوتر
-  footerTextColor: text("footer_text_color"), // لون نص الفوتر
-  footerLogoPosition: text("footer_logo_position").default("left"), // موضع الشعار في الفوتر (left, center, right)
-  footerColumns: integer("footer_columns").default(3), // عدد الأعمدة في الفوتر
-  customFooterHtml: text("custom_footer_html"), // HTML مخصص للفوتر
-  showFooterSocialIcons: boolean("show_footer_social_icons").default(true), // إظهار أيقونات التواصل الاجتماعي في الفوتر
-  showFooterNewsletter: boolean("show_footer_newsletter").default(true), // إظهار النشرة الإخبارية في الفوتر
-  showFooterCopyrightInfo: boolean("show_footer_copyright_info").default(true), // إظهار معلومات حقوق النشر في الفوتر
-  footerCopyrightText: text("footer_copyright_text"), // نص حقوق النشر في الفوتر
-
-  // خيارات إضافية
-  homePageLayout: text("home_page_layout").default("default"), // لتوفير تخطيطات متعددة للصفحة الرئيسية
-  scholarshipPageLayout: text("scholarship_page_layout").default("default"),
-  articlePageLayout: text("article_page_layout").default("default"),
-  customCss: text("custom_css"), // لإضافة CSS مخصص للموقع
+  // Custom CSS
+  customCss: text("custom_css"),
 });
 
 export const insertSiteSettingsSchema = createInsertSchema(siteSettings).omit({
