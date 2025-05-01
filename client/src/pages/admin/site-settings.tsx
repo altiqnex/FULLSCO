@@ -322,32 +322,41 @@ export default function SiteSettingsPage() {
   const form = useForm<SiteSettingsFormValues>({
     resolver: zodResolver(siteSettingsSchema),
     defaultValues: {
-      siteName: settings?.siteName || '',
-      siteTagline: settings?.siteTagline || '',
-      siteDescription: settings?.siteDescription || '',
+      // القيم الأساسية للموقع
+      siteName: settings?.siteName || 'FULLSCO',
+      siteTagline: settings?.siteTagline || 'منصة المنح الدراسية',
+      siteDescription: settings?.siteDescription || 'منصة عربية متكاملة للبحث عن المنح الدراسية وتقديم الطلبات',
       favicon: settings?.favicon || '',
       logo: settings?.logo || '',
       logoDark: settings?.logoDark || '',
-      email: settings?.email || '',
+      
+      // معلومات التواصل
+      email: settings?.email || 'info@fullsco.com',
       phone: settings?.phone || '',
       whatsapp: settings?.whatsapp || '',
       address: settings?.address || '',
+      
+      // الشبكات الاجتماعية
       facebook: settings?.facebook || '',
       twitter: settings?.twitter || '',
       instagram: settings?.instagram || '',
       youtube: settings?.youtube || '',
       linkedin: settings?.linkedin || '',
-      primaryColor: settings?.primaryColor || '',
-      secondaryColor: settings?.secondaryColor || '',
-      accentColor: settings?.accentColor || '',
+      
+      // الألوان والمظهر
+      primaryColor: settings?.primaryColor || '#3b82f6', // أزرق
+      secondaryColor: settings?.secondaryColor || '#10b981', // أخضر
+      accentColor: settings?.accentColor || '#f59e0b', // برتقالي
       enableDarkMode: settings?.enableDarkMode ?? true,
-      rtlDirection: settings?.rtlDirection ?? true,
-      defaultLanguage: settings?.defaultLanguage || 'ar',
+      rtlDirection: settings?.rtlDirection ?? true, // اتجاه RTL مفعل افتراضيًا
+      defaultLanguage: settings?.defaultLanguage || 'ar', // اللغة العربية افتراضية
+      
+      // خيارات الموقع
       enableNewsletter: settings?.enableNewsletter ?? true,
       enableScholarshipSearch: settings?.enableScholarshipSearch ?? true,
-      footerText: settings?.footerText || '',
+      footerText: settings?.footerText || '© 2025 FULLSCO. جميع الحقوق محفوظة.',
       
-      // إعدادات إظهار/إخفاء الأقسام
+      // إعدادات إظهار/إخفاء الأقسام (جميعها مفعلة افتراضيًا)
       showHeroSection: settings?.showHeroSection ?? true,
       showFeaturedScholarships: settings?.showFeaturedScholarships ?? true,
       showSearchSection: settings?.showSearchSection ?? true,
@@ -390,34 +399,43 @@ export default function SiteSettingsPage() {
   // تحديث النموذج عند تغيير البيانات
   useEffect(() => {
     if (settings) {
-      // تحديث النموذج بالقيم الجديدة
+      // تطبيق القيم الافتراضية مع إعطاء أفضلية للقيم الموجودة
       form.reset({
-        siteName: settings.siteName,
-        siteTagline: settings.siteTagline || '',
-        siteDescription: settings.siteDescription || '',
+        // القيم الأساسية للموقع
+        siteName: settings.siteName || 'FULLSCO',
+        siteTagline: settings.siteTagline || 'منصة المنح الدراسية',
+        siteDescription: settings.siteDescription || 'منصة عربية متكاملة للبحث عن المنح الدراسية وتقديم الطلبات',
         favicon: settings.favicon || '',
         logo: settings.logo || '',
         logoDark: settings.logoDark || '',
-        email: settings.email || '',
+        
+        // معلومات التواصل
+        email: settings.email || 'info@fullsco.com',
         phone: settings.phone || '',
         whatsapp: settings.whatsapp || '',
         address: settings.address || '',
+        
+        // الشبكات الاجتماعية
         facebook: settings.facebook || '',
         twitter: settings.twitter || '',
         instagram: settings.instagram || '',
         youtube: settings.youtube || '',
         linkedin: settings.linkedin || '',
-        primaryColor: settings.primaryColor || '',
-        secondaryColor: settings.secondaryColor || '',
-        accentColor: settings.accentColor || '',
-        enableDarkMode: settings.enableDarkMode,
-        rtlDirection: settings.rtlDirection,
-        defaultLanguage: settings.defaultLanguage,
-        enableNewsletter: settings.enableNewsletter,
-        enableScholarshipSearch: settings.enableScholarshipSearch,
-        footerText: settings.footerText || '',
         
-        // إعدادات إظهار/إخفاء الأقسام
+        // الألوان والمظهر
+        primaryColor: settings.primaryColor || '#3b82f6', // أزرق
+        secondaryColor: settings.secondaryColor || '#10b981', // أخضر
+        accentColor: settings.accentColor || '#f59e0b', // برتقالي
+        enableDarkMode: settings.enableDarkMode ?? true,
+        rtlDirection: settings.rtlDirection ?? true, // اتجاه RTL مفعل افتراضيًا
+        defaultLanguage: settings.defaultLanguage || 'ar', // اللغة العربية افتراضية
+        
+        // خيارات الموقع
+        enableNewsletter: settings.enableNewsletter ?? true,
+        enableScholarshipSearch: settings.enableScholarshipSearch ?? true,
+        footerText: settings.footerText || '© 2025 FULLSCO. جميع الحقوق محفوظة.',
+        
+        // إعدادات إظهار/إخفاء الأقسام (جميعها مفعلة افتراضيًا)
         showHeroSection: settings.showHeroSection ?? true,
         showFeaturedScholarships: settings.showFeaturedScholarships ?? true,
         showSearchSection: settings.showSearchSection ?? true,
@@ -454,6 +472,12 @@ export default function SiteSettingsPage() {
         scholarshipPageLayout: settings.scholarshipPageLayout || 'default',
         articlePageLayout: settings.articlePageLayout || 'default',
         customCss: settings.customCss || '',
+      });
+      
+      console.log('Form reset with data:', { 
+        siteName: settings?.siteName || 'FULLSCO',
+        rtlDirection: settings?.rtlDirection ?? true,
+        defaultLanguage: settings?.defaultLanguage || 'ar'
       });
     }
   }, [settings, form]);
