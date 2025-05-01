@@ -190,10 +190,43 @@ export const siteSettings = pgTable("site_settings", {
   enableScholarshipSearch: boolean("enable_scholarship_search"),
   footerText: text("footer_text"),
   
-  // Hero Section
+  // Home Page Sections
   showHeroSection: boolean("show_hero_section"),
+  showFeaturedScholarships: boolean("show_featured_scholarships"),
+  showSearchSection: boolean("show_search_section"),
+  showCategoriesSection: boolean("show_categories_section"),
+  showCountriesSection: boolean("show_countries_section"),
+  showLatestArticles: boolean("show_latest_articles"),
+  showSuccessStories: boolean("show_success_stories"),
+  showNewsletterSection: boolean("show_newsletter_section"),
+  showStatisticsSection: boolean("show_statistics_section"),
+  showPartnersSection: boolean("show_partners_section"),
+  
+  // Section Titles and Descriptions
   heroTitle: text("hero_title"),
   heroSubtitle: text("hero_subtitle"),
+  heroDescription: text("hero_description"),
+  featuredScholarshipsTitle: text("featured_scholarships_title"),
+  featuredScholarshipsDescription: text("featured_scholarships_description"),
+  categoriesSectionTitle: text("categories_section_title"),
+  categoriesSectionDescription: text("categories_section_description"),
+  countriesSectionTitle: text("countries_section_title"),
+  countriesSectionDescription: text("countries_section_description"),
+  latestArticlesTitle: text("latest_articles_title"),
+  latestArticlesDescription: text("latest_articles_description"),
+  successStoriesTitle: text("success_stories_title"),
+  successStoriesDescription: text("success_stories_description"),
+  newsletterSectionTitle: text("newsletter_section_title"),
+  newsletterSectionDescription: text("newsletter_section_description"),
+  statisticsSectionTitle: text("statistics_section_title"),
+  statisticsSectionDescription: text("statistics_section_description"),
+  partnersSectionTitle: text("partners_section_title"),
+  partnersSectionDescription: text("partners_section_description"),
+  
+  // Page Layouts
+  homePageLayout: text("home_page_layout"),
+  scholarshipPageLayout: text("scholarship_page_layout"),
+  articlePageLayout: text("article_page_layout"),
   
   // Custom CSS
   customCss: text("custom_css"),
