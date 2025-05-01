@@ -8,7 +8,7 @@ import Articles from "@/pages/articles";
 import ArticleDetail from "@/pages/article-detail";
 import StaticPage from "@/pages/static-page";
 
-// Admin Components - Original
+// Admin Components
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminScholarships from "@/pages/admin/scholarships";
 import AdminPosts from "@/pages/admin/posts";
@@ -19,7 +19,7 @@ import AdminAnalytics from "@/pages/admin/analytics";
 import AdminCategories from "@/pages/admin/categories";
 import AdminLevels from "@/pages/admin/levels";
 import AdminCountries from "@/pages/admin/countries";
-import AdminSiteSettings from "@/pages/admin/site-settings";
+import AdminSiteSettings from "@/pages/admin/site-settings"; // نستخدم واجهة واحدة فقط لإعدادات الموقع
 import AdminPages from "@/pages/admin/pages";
 import AdminMenus from "@/pages/admin/menus";
 import AdminMedia from "@/pages/admin/media";
@@ -29,9 +29,8 @@ import CreateScholarship from "@/pages/admin/create-scholarship";
 import CreatePost from "@/pages/admin/create-post";
 import AdminLogin from "@/pages/admin/login";
 
-// New Admin Components
+// New Admin Dashboard Component
 import NewDashboard from "@/pages/admin/new-dashboard";
-import NewSiteSettings from "@/pages/admin/new-site-settings";
 
 import Header from "@/components/header";
 import Footer from "@/components/footer";
@@ -103,7 +102,6 @@ function App() {
                     
                     {/* New Admin Dashboard */}
                     <Route path="/admin/new" component={NewDashboard} />
-                    <Route path="/admin/new/site-settings" component={NewSiteSettings} />
                     
                     {/* Original Admin Routes */}
                     <Route path="/admin" component={AdminDashboard} />

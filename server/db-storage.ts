@@ -468,43 +468,22 @@ export class DatabaseStorage implements IStorage {
     // Check if there's any site settings record
     const existingSettings = await this.getSiteSettings();
     
-    // Convert camelCase keys to snake_case for database
-    const dbSettings: any = {};
-    for (const [key, value] of Object.entries(settings)) {
-      // Convert camelCase to snake_case
-      const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
-      dbSettings[snakeKey] = value;
-    }
-    
-    if (existingSettings) {
-      // Perform update with raw SQL to avoid schema mismatch issues
-      await db.execute(
-        sql`UPDATE site_settings SET ${sql.join(
-          Object.entries(dbSettings).map(
-            ([key, value]) => sql`${sql.identifier(key)} = ${value}`
-          ),
-          sql`, `
-        )} WHERE id = ${existingSettings.id}`
-      );
+    try {
+      if (existingSettings) {
+        // Use drizzle's update method instead of raw SQL
+        await db.update(siteSettings)
+          .set(settings)
+          .where(eq(siteSettings.id, existingSettings.id));
+      } else {
+        // Use drizzle's insert method instead of raw SQL
+        await db.insert(siteSettings).values(settings as any);
+      }
       
+      // Fetch the updated settings
       return await this.getSiteSettings() as SiteSetting;
-    } else {
-      // Build column list and values list for INSERT
-      const columns = Object.keys(dbSettings);
-      const values = Object.values(dbSettings);
-      
-      // Perform insert with raw SQL
-      await db.execute(
-        sql`INSERT INTO site_settings (${sql.join(
-          columns.map(col => sql.identifier(col)),
-          sql`, `
-        )}) VALUES (${sql.join(
-          values.map(val => sql`${val}`),
-          sql`, `
-        )})`
-      );
-      
-      return await this.getSiteSettings() as SiteSetting;
+    } catch (error) {
+      console.error("Error updating site settings:", error);
+      throw error;
     }
   }
 
