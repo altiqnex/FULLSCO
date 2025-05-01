@@ -281,23 +281,11 @@ export class DatabaseStorage implements IStorage {
     return true;
   }
 
-  async listPosts(filters?: { isFeatured?: boolean, authorId?: number }): Promise<Post[]> {
+  async listPosts(filters?: { authorId?: number }): Promise<Post[]> {
     let query = db.select().from(posts);
     
-    if (filters) {
-      const conditions = [];
-      if (filters.isFeatured !== undefined) {
-        conditions.push(eq(posts.isFeatured, filters.isFeatured));
-      }
-      if (filters.authorId !== undefined) {
-        conditions.push(eq(posts.authorId, filters.authorId));
-      }
-      
-      if (conditions.length > 0) {
-        for (const condition of conditions) {
-          query = query.where(condition);
-        }
-      }
+    if (filters && filters.authorId !== undefined) {
+      query = query.where(eq(posts.authorId, filters.authorId));
     }
     
     return await query.orderBy(desc(posts.createdAt));
@@ -536,7 +524,7 @@ export class DatabaseStorage implements IStorage {
     const totalPosts = await db.select({ count: sql<number>`count(*)` }).from(posts);
     return {
       total: totalPosts[0].count,
-      popular: await db.select().from(posts).orderBy(desc(posts.views)).limit(5)
+      popular: await db.select().from(posts).orderBy(desc(posts.createdAt)).limit(5)
     };
   }
 
@@ -564,10 +552,10 @@ export class DatabaseStorage implements IStorage {
 
   async getTopContent(type: string = 'all', limit: number = 5): Promise<any> {
     if (type === 'posts' || type === 'all') {
-      const topPosts = await db.select().from(posts).orderBy(desc(posts.views)).limit(limit);
+      const topPosts = await db.select().from(posts).orderBy(desc(posts.createdAt)).limit(limit);
       return { posts: topPosts };
     } else if (type === 'scholarships') {
-      const topScholarships = await db.select().from(scholarships).where(eq(scholarships.isFeatured, true)).limit(limit);
+      const topScholarships = await db.select().from(scholarships).limit(limit);
       return { scholarships: topScholarships };
     }
     
