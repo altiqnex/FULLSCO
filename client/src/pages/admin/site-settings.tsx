@@ -446,8 +446,16 @@ export default function SiteSettingsPage() {
     
     console.log('Submitting synchronized site settings data', data);
     
-    // إرسال جميع البيانات بعد المزامنة
-    updateMutation.mutate(data);
+    try {
+      // إرسال جميع البيانات بعد المزامنة
+      updateMutation.mutate(data);
+    } catch (error) {
+      console.error('Error when submitting form:', error);
+      toast({ 
+        title: 'خطأ في حفظ الإعدادات', 
+        description: 'حدث خطأ أثناء حفظ إعدادات الموقع. الرجاء المحاولة مرة أخرى.' 
+      });
+    }
   };
 
   // في حالة تحميل بيانات المصادقة أو عدم تسجيل الدخول

@@ -1,50 +1,21 @@
-import { useState } from 'react';
-import { useIsMobile } from '@/hooks/use-mobile';
-import Sidebar from '@/components/admin/sidebar';
-import { Button } from '@/components/ui/button';
-import { Menu, Save } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useEffect } from 'react';
+import { useLocation } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 
 export default function AdminSettings() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const isMobile = useIsMobile();
+  const [, navigate] = useLocation();
   const { toast } = useToast();
   
-  // إعدادات الموقع
-  const [siteName, setSiteName] = useState('FULLSCO');
-  const [siteDescription, setSiteDescription] = useState('منصة المنح الدراسية والمحتوى التعليمي');
-  const [contactEmail, setContactEmail] = useState('info@fullsco.com');
-  const [enableNewsletter, setEnableNewsletter] = useState(true);
-  const [enableRegistration, setEnableRegistration] = useState(true);
-  
-  // إعدادات تحسين محركات البحث
-  const [metaTitle, setMetaTitle] = useState('FULLSCO - منصة المنح الدراسية');
-  const [metaDescription, setMetaDescription] = useState('ابحث عن المنح الدراسية واحصل على المعلومات التي تحتاجها لدراستك في الخارج');
-  const [googleAnalyticsId, setGoogleAnalyticsId] = useState('');
-  
-  const toggleSidebar = () => {
-    console.log('Settings: toggling sidebar');
-    setSidebarOpen(!sidebarOpen);
-  };
-
-  const closeSidebar = () => {
-    console.log('Settings: closing sidebar');
-    setSidebarOpen(false);
-  };
-
-  const handleSaveSettings = () => {
-    // هنا سيتم حفظ الإعدادات للخادم في المرحلة القادمة
+  // توجيه المستخدم إلى صفحة إعدادات الموقع الرئيسية
+  useEffect(() => {
     toast({
-      title: "تم حفظ الإعدادات بنجاح",
-      description: "تم تحديث إعدادات الموقع",
+      title: "تم نقلك",
+      description: "تم توحيد صفحات الإعدادات، وتم نقلك إلى الصفحة الرئيسية للإعدادات"
     });
-  };
+    
+    // توجيه المستخدم إلى صفحة إعدادات الموقع (site-settings)
+    navigate('/admin/site-settings');
+  }, [navigate, toast]);
 
   return (
     <div className="min-h-screen bg-background" dir="rtl">
