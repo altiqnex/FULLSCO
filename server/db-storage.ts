@@ -465,24 +465,44 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateSiteSettings(settings: Partial<InsertSiteSetting>): Promise<SiteSetting> {
+    console.log("DB storage: updating site settings:", JSON.stringify(settings, null, 2));
+    
     // Check if there's any site settings record
     const existingSettings = await this.getSiteSettings();
+    console.log("DB storage: existing settings:", existingSettings ? JSON.stringify(existingSettings, null, 2) : "None");
     
     try {
+      // معالجة البيانات بتنظيفها للتأكد من تناسبها مع هيكل قاعدة البيانات
+      const cleanedSettings: any = { ...settings };
+      
+      // تحويل القيم الفارغة (سلاسل فارغة) إلى null لأن قاعدة البيانات تتوقع ذلك
+      Object.keys(cleanedSettings).forEach(key => {
+        if (cleanedSettings[key] === '') {
+          cleanedSettings[key] = null;
+        }
+      });
+      
+      console.log("DB storage: cleaned settings:", JSON.stringify(cleanedSettings, null, 2));
+      
       if (existingSettings) {
-        // Use drizzle's update method instead of raw SQL
+        console.log("DB storage: updating existing settings with ID:", existingSettings.id);
+        // Use drizzle's update method
         await db.update(siteSettings)
-          .set(settings)
+          .set(cleanedSettings)
           .where(eq(siteSettings.id, existingSettings.id));
       } else {
-        // Use drizzle's insert method instead of raw SQL
-        await db.insert(siteSettings).values(settings as any);
+        console.log("DB storage: inserting new settings");
+        // Use drizzle's insert method
+        await db.insert(siteSettings).values(cleanedSettings);
       }
       
       // Fetch the updated settings
-      return await this.getSiteSettings() as SiteSetting;
+      const updatedSettings = await this.getSiteSettings();
+      console.log("DB storage: settings after update:", JSON.stringify(updatedSettings, null, 2));
+      
+      return updatedSettings as SiteSetting;
     } catch (error) {
-      console.error("Error updating site settings:", error);
+      console.error("DB storage: error updating site settings:", error);
       throw error;
     }
   }

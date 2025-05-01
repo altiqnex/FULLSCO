@@ -669,11 +669,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/site-settings", isAdmin, async (req, res) => {
     try {
-      const data = insertSiteSettingsSchema.partial().parse(req.body);
+      console.log("Received site settings update request:", JSON.stringify(req.body, null, 2));
+      
+      // حاول التحقق من صحة البيانات
+      let data;
+      try {
+        data = insertSiteSettingsSchema.partial().parse(req.body);
+        console.log("Parsed site settings data:", JSON.stringify(data, null, 2));
+      } catch (parseError) {
+        console.error("Site settings validation error:", parseError);
+        return res.status(400).json({ 
+          message: "Invalid data format", 
+          details: (parseError as Error).message 
+        });
+      }
+      
+      // تحديث الإعدادات
       const settings = await storage.updateSiteSettings(data);
+      console.log("Site settings updated successfully:", JSON.stringify(settings, null, 2));
+      
+      // إرجاع الإعدادات المحدثة
       res.json(settings);
     } catch (error) {
-      res.status(400).json({ message: (error as Error).message });
+      console.error("Error updating site settings:", error);
+      res.status(500).json({ 
+        message: "Failed to update settings", 
+        details: (error as Error).message 
+      });
     }
   });
 
